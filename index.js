@@ -1,6 +1,6 @@
 // === Constants ===
 const BASE = "https://fsa-crud-2aa9294fe819.herokuapp.com/api";
-const COHORT = ""; // Make sure to change this!
+const COHORT = "2608-robbi"; // Make sure to change this!
 const API = BASE + COHORT;
 
 // === State ===
@@ -51,6 +51,38 @@ async function getGuests() {
     const response = await fetch(API + "/guests");
     const result = await response.json();
     guests = result.data;
+    render();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/** Adds a new party to the API and updates state */
+async function addParty(party) {
+  try {
+    const response = await fetch(API + "/events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(party),
+    });
+    const result = await response.json();
+    parties.push(result.data);
+    render();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/** Deletes a party from the API and updates state */
+async function deleteParty(id) {
+  try {
+    const response = await fetch(API + "/events/" + id, {
+      method: "DELETE",
+    });
+    const result = await response.json();
+    parties = parties.filter((party) => party.id !== id);
     render();
   } catch (e) {
     console.error(e);
@@ -113,8 +145,8 @@ function GuestList() {
   const $ul = document.createElement("ul");
   const guestsAtParty = guests.filter((guest) =>
     rsvps.find(
-      (rsvp) => rsvp.guestId === guest.id && rsvp.eventId === selectedParty.id
-    )
+      (rsvp) => rsvp.guestId === guest.id && rsvp.eventId === selectedParty.id,
+    ),
   );
 
   // Simple components can also be created anonymously:
